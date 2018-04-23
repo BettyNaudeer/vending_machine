@@ -11,8 +11,6 @@ Design a vending machine using ruby. The vending machine should perform as follo
 
 # Usage
 ```
-product1 = Product.new(name: 'Fanta', price: 0.90)
-
 products = [
   Product.new(name: 'Fanta', price: 0.90),
   Product.new(name: 'Coke', price: 0.90),
@@ -34,6 +32,8 @@ vm.pay_amount(2.00)
 
 ### To vend a product ..
 ```
+product1 = Product.new(name: 'Fanta', price: 0.90)
+
 vm.vend_product[product1]
 ```
 

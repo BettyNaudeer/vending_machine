@@ -41,8 +41,8 @@ class VendingMachine
   end
 
   def return_change(amount: amount)
-    available_coins  = @change.sort_by {|coin| coin.denomination}.reverse
-    coins            = []          # holds list of coins to return
+    available_coins = @change.sort_by {|coin| coin.denomination}.reverse
+    coins = []          # holds list of coins to return
     remaining_amount = amount.round(2)
     current_change = 0
     available_coins.each do |coin| # counts down finds biggest coins first
@@ -56,28 +56,5 @@ class VendingMachine
     puts "Change = #{amount.round(2)}, Coins = #{coins}\n\n"
     return coins
   end
-
-  # def return_change(amount: amount)
-  #   @change.sort_by {|coin| coin.denomination}.reverse
-  #   remaining_amount = amount.round(2)
-  #   given_change = []
-  #   current_change = 0
-  #   for coin in @change
-  #     while (current_change < remaining_amount)
-  #       if (remaining_amount > coin.denomination)
-  #         @change.delete(coin)
-  #         given_change.concat(coin)
-  #         current_change = current_change + coin.denomination
-  #         remaining_amount - current_change
-  #         print(current_change)
-  #       end
-  #     end
-  #   end
-  #   if (current_change = amount)
-  #     given_change
-  #   else
-  #     puts "Haven't got the right change"
-  #   end
-  # end
 
 end

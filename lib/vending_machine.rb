@@ -1,10 +1,3 @@
-##   Programming Exercise: Vending Machine Exercise
-#    Design a vending machine using ruby. The vending machine should perform as follows:
-#    Once an item is selected and the appropriate amount of money is inserted, the vending machine should return the correct product.
-#    It should also return change if too much money is provided, or ask for more money if insufficient funds have been inserted.
-#    The machine should take an initial load of products and change. The change will be of denominations 1p, 2p, 5p, 10p, 20p, 50p, £1, £2.
-#    There should be a way of reloading either products or change at a later point.
-#    The machine should keep track of the products and change that it contains.
 class VendingMachine
 
   attr_reader :products, :change, :current_amount
@@ -24,8 +17,12 @@ class VendingMachine
   end
 
   def vend_product(product: product)
-    @products.delete(product)
-    puts "Enjoy your #{product.name}"
+    if (@products).include?(product)
+      @products.delete(product)
+      puts "Enjoy your #{product.name}"
+    else
+      puts "Out of Stock"
+    end
   end
 
   def pay_amount(amount: amount)
@@ -36,6 +33,7 @@ class VendingMachine
     if @current_amount > product.price
       vend_product(product: product)
       change_needed = @current_amount - product.price
+      return_change(amount: change_needed)
     else
       extra_needed = product.price - @current_amount
       puts "Enter £#{extra_needed} for #{product.name}"
@@ -43,6 +41,43 @@ class VendingMachine
   end
 
   def return_change(amount: amount)
-    Coin.new(denomination: 0.01)
+    available_coins  = @change.sort_by {|coin| coin.denomination}.reverse
+    coins            = []          # holds list of coins to return
+    remaining_amount = amount.round(2)
+    current_change = 0
+    available_coins.each do |coin| # counts down finds biggest coins first
+      if ((remaining_amount/coin.denomination).to_int > 0)
+        coins << coin
+        @change.delete(coin)
+        current_change = current_change + coin.denomination
+        remaining_amount = amount - current_change
+      end
+    end
+    puts "Change = #{amount.round(2)}, Coins = #{coins}\n\n"
+    return coins
   end
+
+  # def return_change(amount: amount)
+  #   @change.sort_by {|coin| coin.denomination}.reverse
+  #   remaining_amount = amount.round(2)
+  #   given_change = []
+  #   current_change = 0
+  #   for coin in @change
+  #     while (current_change < remaining_amount)
+  #       if (remaining_amount > coin.denomination)
+  #         @change.delete(coin)
+  #         given_change.concat(coin)
+  #         current_change = current_change + coin.denomination
+  #         remaining_amount - current_change
+  #         print(current_change)
+  #       end
+  #     end
+  #   end
+  #   if (current_change = amount)
+  #     given_change
+  #   else
+  #     puts "Haven't got the right change"
+  #   end
+  # end
+
 end

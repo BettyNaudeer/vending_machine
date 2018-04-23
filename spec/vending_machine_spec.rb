@@ -48,6 +48,11 @@ describe VendingMachine do
       vendingmachine.vend_product(product: product1)
       expect(vendingmachine.products).to eq([])
     end
+
+    it 'does not vend product if product does not exist' do
+      vendingmachine.vend_product(product: product1)
+      expect(vendingmachine.products).to eq([])
+    end
   end
 
   describe '#pay_amount' do
@@ -80,11 +85,25 @@ describe VendingMachine do
   end
 
   describe '#return_change' do
-    it 'will return the correct change' do
+    it 'will return the correct amount' do
       vendingmachine.input_products(products: [product1])
       vendingmachine.input_change(change: [one_p])
-      #vendingmachine.pay_amount(amount: 0.51)
-      expect(vendingmachine.return_change(amount: 0.01).denomination).to eq(one_p.denomination)
+      vendingmachine.pay_amount(amount: 0.51)
+      expect(vendingmachine.have_enough_for(product: product1)).to eq([one_p])
+    end
+  end
+
+  describe '#change_denominations' do
+    it 'will return the correct amount of coins' do
+      vendingmachine.input_change(change: [one_p, one_p, one_p])
+      vendingmachine.pay_amount(amount: 0.53)
+      expect(vendingmachine.have_enough_for(product: product1)).to eq([one_p, one_p, one_p])
+    end
+
+    it 'will return two of the correct coins' do
+      vendingmachine.input_change(change: [one_p, two_p, one_p])
+      vendingmachine.pay_amount(amount: 0.53)
+      expect(vendingmachine.have_enough_for(product: product1)).to eq([two_p, one_p])
     end
   end
 end

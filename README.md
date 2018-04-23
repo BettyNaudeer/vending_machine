@@ -26,14 +26,15 @@ change = [
 ]
 
 vm = VendingMachine.new(products: products, change: change)
-
+```
+### To pay amount ..
+```
 vm.pay_amount(2.00)
 ```
 
 ### To vend a product ..
 ```
 product1 = Product.new(name: 'Fanta', price: 0.90)
-
 vm.vend_product[product1]
 ```
 

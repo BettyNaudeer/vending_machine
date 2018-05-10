@@ -1,22 +1,22 @@
 class VendingMachine
 
-  attr_reader :products, :change, :current_amount
+  attr_reader :products, :change
 
-  def initialize(products: products, change: change)
+  def initialize(products:, change:)
     @products = products
     @change = change
-    @current_amount = 0
+    @inserted_coins = []
   end
 
-  def input_products(products: products)
+  def input_products(products:)
     @products.concat(products)
   end
 
-  def input_change(change: change)
+  def input_change(change:)
     @change.concat(change)
   end
 
-  def vend_product(product: product)
+  def vend_product(product:)
     if (@products).include?(product)
       @products.delete(product)
       puts "Enjoy your #{product.name}"
@@ -25,22 +25,43 @@ class VendingMachine
     end
   end
 
-  def pay_amount(amount: amount)
-    @current_amount = @current_amount + amount
+  def pay_amount(coin:)
+    @inserted_coins << coin
+    have_enough_for(product: @current_product)
   end
 
-  def have_enough_for(product: product)
-    if @current_amount > product.price
+  def choose_product(product:)
+    puts "Please enter £#{product.price}"
+    @current_product = product
+  end
+
+  def current_amount()
+    @inserted_coins.inject(0) {|sum,coin| sum+=coin.denomination}
+  end
+
+  def have_enough_for(product:)
+    if current_amount() >= product.price
+      if @change.empty? && current_amount() > product.price
+        puts "Needs exact amount"
+        return @inserted_coins
+      end
       vend_product(product: product)
-      change_needed = @current_amount - product.price
-      return_change(amount: change_needed)
+      change_needed = current_amount() - product.price
+      returned_change = return_change(amount: change_needed)
+      input_change(change: @inserted_coins)
+      @current_product = nil
+      @inserted_coins = []
+      return returned_change
     else
-      extra_needed = product.price - @current_amount
+      extra_needed = product.price - current_amount()
       puts "Enter £#{extra_needed} for #{product.name}"
     end
   end
 
-  def return_change(amount: amount)
+  #def reset
+
+end
+  def return_change(amount:)
     available_coins = @change.sort_by {|coin| coin.denomination}.reverse
     coins = []          # holds list of coins to return
     remaining_amount = amount.round(2)

@@ -5,6 +5,8 @@ require './lib/coin.rb'
 describe VendingMachine do
   let(:one_p) {Coin.new(denomination: 0.01)}
   let(:two_p) {Coin.new(denomination: 0.02)}
+  let(:fifty_p) {Coin.new(denomination: 0.5)}
+  let(:one_pound) {Coin.new(denomination: 1)}
   subject(:vendingmachine) {
     described_class.new(products: [],
     change: [])}
@@ -55,55 +57,30 @@ describe VendingMachine do
     end
   end
 
-  describe '#pay_amount' do
-    it 'holds the amount given from the customer' do
-      vendingmachine.pay_amount(amount: 1)
-      expect(vendingmachine.current_amount).to eq(1)
-    end
-
-    it 'holds multiple amounts given from the customer' do
-      vendingmachine.pay_amount(amount: 1)
-      vendingmachine.pay_amount(amount: 0.5)
-      expect(vendingmachine.current_amount).to eq(1.5)
-    end
-  end
-
-  describe '#have_enough_for' do
-    it 'will vend product if user has entered enough' do
+  describe 'vending a product' do
+    it 'will vend a product with exact change' do
       vendingmachine.input_products(products: [product1])
-      vendingmachine.pay_amount(amount: 1)
-      vendingmachine.have_enough_for(product: product1)
+      vendingmachine.choose_product(product: product1)
+      change = vendingmachine.pay_amount(coin: fifty_p)
       expect(vendingmachine.products).to eq([])
+      expect(change).to eq([])
     end
 
-    it 'will not vend product if user has entered enough' do
-      vendingmachine.input_products(products: [product1])
-      vendingmachine.pay_amount(amount: 0.3)
-      vendingmachine.have_enough_for(product: product1)
-      expect(vendingmachine.products).to eq([product1])
-    end
-  end
-
-  describe '#return_change' do
-    it 'will return the correct amount' do
+    it 'will vend a product without exact change' do
       vendingmachine.input_products(products: [product1])
       vendingmachine.input_change(change: [one_p])
-      vendingmachine.pay_amount(amount: 0.51)
-      expect(vendingmachine.have_enough_for(product: product1)).to eq([one_p])
-    end
-  end
-
-  describe '#change_denominations' do
-    it 'will return the correct amount of coins' do
-      vendingmachine.input_change(change: [one_p, one_p, one_p])
-      vendingmachine.pay_amount(amount: 0.53)
-      expect(vendingmachine.have_enough_for(product: product1)).to eq([one_p, one_p, one_p])
+      vendingmachine.choose_product(product: product1)
+      vendingmachine.pay_amount(coin: one_p)
+      change = vendingmachine.pay_amount(coin: fifty_p)
+      expect(vendingmachine.products).to eq([])
+      expect(change).to eq([one_p])
     end
 
-    it 'will return two of the correct coins' do
-      vendingmachine.input_change(change: [one_p, two_p, one_p])
-      vendingmachine.pay_amount(amount: 0.53)
-      expect(vendingmachine.have_enough_for(product: product1)).to eq([two_p, one_p])
+    it 'will not have enough change' do
+      vendingmachine.input_products(products: [product1])
+      vendingmachine.choose_product(product: product1)
+      change = vendingmachine.pay_amount(coin: one_pound)
+      expect(change).to eq([one_pound])
     end
   end
 end
